@@ -31,7 +31,7 @@ vec3 getNormalFromMap()
 void main()
 {    
     gPosition = WorldPos;
-    gNormal = normalize(Normal);//getNormalFromMap();
+    gNormal = getNormalFromMap();
     gAlbedoSpec.rgb = texture(albedoMap, TexCoords).rgb;
     gRoughness.y = texture(metallicMap, TexCoords).r;
     gRoughness.x = texture(roughnessMap, TexCoords).r;

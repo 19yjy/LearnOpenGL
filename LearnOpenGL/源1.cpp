@@ -9,7 +9,6 @@
 
 #include "Shader.cpp"
 #include "Camera.h"
-#include "Model.h"
 #include"Object.h"
 #include"Texture.h"
 #include"Scene.h"
@@ -136,9 +135,9 @@ int main()
     //model = rotate(model, radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
     model = scale(model, vec3(20.0f));
     scene.add(make_shared<Quad>(rustediron1, model));
-    for (int row = 0; row <1; ++row)
+    for (int row = 0; row <9; ++row)
     {
-        for (int col = 0; col < 1; ++col)
+        for (int col = 0; col < 10; ++col)
         {
 
             model = glm::mat4(1.0f);
@@ -147,8 +146,8 @@ int main()
                 (row - (nrRows / 2)) * spacing,
                 0.0f
             ));
-            //scene.add(make_shared<Sphere>(light_gold_bl, model));
-            scene.add(make_shared<Cube>(light_gold_bl, model));
+            if(col>=5)scene.add(make_shared<Sphere>(light_gold_bl, model));
+            else scene.add(make_shared<Cube>(light_gold_bl, model));
         }
     }
     // initialize static shader uniforms before rendering
@@ -205,8 +204,6 @@ int main()
 
         DeferredShading.use();
         DeferredShading.setVec3("camPos", camera.Position);
-        mat4 vWorldToScreen = projection * view;
-        DeferredShading.setMat4("vWorldToScreen", vWorldToScreen);
         scene.GetGbuffer(Gbuffer, view);
         //
         scene.renderGbuffer(DeferredShading, Lightshader, view);
