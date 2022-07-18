@@ -1,18 +1,22 @@
 #pragma once
-#ifndef GLOBAL_H
-#define GLOBAL_H
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "stb_image.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include<vector>
-unsigned int cubeVAO = 0;
-unsigned int cubeVBO = 0;
-void renderCube()
+extern unsigned int cubeVAO;
+extern unsigned int cubeVBO;
+extern unsigned int quadVAO;
+extern unsigned int quadVBO;
+extern unsigned int sphereVAO;
+extern unsigned int sphereVBO;
+extern unsigned int indexCount;
+
+
+inline void renderCube()
 {
 	// initialize (if necessary)
 	if (cubeVAO == 0)
@@ -82,19 +86,17 @@ void renderCube()
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 }
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad()
+inline void renderQuad()
 {
 	if (quadVAO == 0)
 	{
 		float quadVertices[] = {
-                // positions     //normal   // texture Coords
-                -1.0f,  1.0f, 0.0f,0.0f,1.0f,0.0f, 0.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f,0.0f,1.0f,0.0f, 0.0f, 0.0f,
-                 1.0f,  1.0f, 0.0f,0.0f,1.0f,0.0f, 1.0f, 1.0f,
-                 1.0f, -1.0f, 0.0f,0.0f,1.0f,0.0f, 1.0f, 0.0f,
-            };
+			// positions     //normal   // texture Coords
+			-1.0f,  1.0f, 0.0f,0.0f,1.0f,0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f,0.0f,1.0f,0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f,0.0f,1.0f,0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f,0.0f,1.0f,0.0f, 1.0f, 0.0f,
+		};
 		// setup plane VAO
 		glGenVertexArrays(1, &quadVAO);
 		glGenBuffers(1, &quadVBO);
@@ -112,10 +114,7 @@ void renderQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
-unsigned int sphereVAO = 0;
-unsigned int sphereVBO = 0;
-unsigned int indexCount;
-void renderSphere() {
+inline void renderSphere() {
 	if (sphereVAO == 0)
 	{
 		glGenVertexArrays(1, &sphereVAO);
@@ -206,4 +205,3 @@ void renderSphere() {
 	glBindVertexArray(sphereVAO);
 	glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
 }
-#endif // !GLOBAL_H

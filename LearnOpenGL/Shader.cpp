@@ -1,24 +1,8 @@
-#ifndef SHADER_H
-#define SHADER_H
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glad/glad.h>
-
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-class Shader
-{
-public:
-    unsigned int ID;
+#include"Shader.h"
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(){}
-    Shader(const char* vertexPath, const char* fragmentPath,const char* geometryPath=NULL)
+Shader::Shader(){}
+Shader::Shader(const char* vertexPath, const char* fragmentPath,const char* geometryPath)
     {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -106,40 +90,40 @@ public:
         glDeleteShader(fragment);
         if (geometryPath != NULL)glDeleteShader(geometry);
     }
-    ~Shader() {
+Shader::~Shader() {
         glDeleteProgram(ID);
     }
     // activate the shader
     // ------------------------------------------------------------------------
-    void use()
+    void Shader::use()
     {
         glUseProgram(ID);
     }
     // utility uniform functions
     // ------------------------------------------------------------------------
-    void setBool(const std::string& name, bool value) const
+    void Shader::setBool(const std::string& name, bool value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
     // ------------------------------------------------------------------------
-    void setInt(const std::string& name, int value) const
+    void Shader::setInt(const std::string& name, int value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
     // ------------------------------------------------------------------------
-    void setFloat(const std::string& name, float value) const
+    void Shader::setFloat(const std::string& name, float value) const
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
-    void setVec3(const std::string& name, glm::vec4 tmp) const
+    void Shader::setVec3(const std::string& name, glm::vec4 tmp) const
     {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), tmp.x, tmp.y, tmp.z,tmp.w);
     }
-    void setVec3(const std::string& name, glm::vec3 tmp) const
+    void Shader::setVec3(const std::string& name, glm::vec3 tmp) const
     {
         glUniform3f(glGetUniformLocation(ID, name.c_str()), tmp.x, tmp.y, tmp.z);
     }
-    void setMat4(const std::string& name, glm::mat4 trans ) const
+    void Shader::setMat4(const std::string& name, glm::mat4 trans ) const
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(trans));
     }
@@ -156,10 +140,9 @@ public:
         setFloat(light.name + ".constant", light.constant);
         setFloat(light.name + ".quadratic", light.quadratic);
     }*/
-private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------
-    void checkCompileErrors(unsigned int shader, std::string type)
+    void Shader::checkCompileErrors(unsigned int shader, std::string type)
     {
         int success;
         char infoLog[1024];
@@ -182,5 +165,3 @@ private:
             }
         }
     }
-};
-#endif

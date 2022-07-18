@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include<string.h>
 #include"global.h"
+
 using namespace std;
 using namespace glm;
 class Light {

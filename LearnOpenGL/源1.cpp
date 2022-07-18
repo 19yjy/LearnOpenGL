@@ -1,13 +1,12 @@
-#define STB_IMAGE_IMPLEMENTATION
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "stb_image.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.cpp"
+#include "Shader.h"
 #include "Camera.h"
 #include"Object.h"
 #include"Texture.h"
@@ -33,6 +32,16 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+unsigned int quadVAO = 0;
+unsigned int quadVBO = 0;
+
+unsigned int cubeVAO = 0;
+unsigned int cubeVBO = 0;
+
+unsigned int sphereVAO = 0;
+unsigned int sphereVBO = 0;
+unsigned int indexCount;
 
 int main()
 {
@@ -79,7 +88,6 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-    stbi_set_flip_vertically_on_load(true);
 
     shared_ptr<myTexture>light_gold_bl = make_shared<myTexture>(string("light-gold-bl"));
     shared_ptr<myTexture>rustediron1 = make_shared<myTexture>(string("rustediron1"));
@@ -91,7 +99,7 @@ int main()
     Shader Lightshader("Shader/Light/vertexShader.txt", "Shader/Light/fragmentShader.txt");
     Shader Debug("Shader/Debug/vertexShader.txt", "Shader/Debug/fragmentShader.txt");
     Shader Gbuffer("Shader/GBuffer/vertexShader.txt", "Shader/GBuffer/fragmentShader.txt");
-    Shader DeferredShading("Shader/DeferredShading/vertexShader.txt", "Shader/DeferredShading/fragmentShader.txt");
+    Shader DeferredShading("Shader/DeferredShading--/vertexShader.txt", "Shader/DeferredShading--/fragmentShader.txt");
 
     shader.use();
     shader.setInt("albedoMap", 0);
@@ -157,6 +165,7 @@ int main()
     shader.setMat4("projection", projection);
     mat4 lightView = glm::lookAt(lightPositions[0], glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     mat4 lightProjection = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, 600.0f);
+    mat4 inProjection = glm::inverse(projection);
     shader.setMat4("lightpvm", lightProjection * lightView);
 
     //setVec3("camPos", camera.Position);
@@ -167,7 +176,7 @@ int main()
 
     DeferredShading.use();
     DeferredShading.setMat4("Lpv", lightProjection * lightView);
-
+    DeferredShading.setMat4("inprojection", projection);
     Lightshader.use();
     Lightshader.setMat4("projection", projection);
     Lightshader.setMat4("model", model);
@@ -193,7 +202,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -204,10 +213,12 @@ int main()
 
         DeferredShading.use();
         DeferredShading.setVec3("camPos", camera.Position);
+        DeferredShading.setMat4("vWorldToScreen", projection * view);
+        DeferredShading.setMat4("view",  view);
         scene.GetGbuffer(Gbuffer, view);
         //
-        scene.renderGbuffer(DeferredShading, Lightshader, view);
-        //Debuger(Debug, scene.gLightpos);
+        scene.renderGbuffer(DeferredShading,view);
+        //Debuger(Debug, scene.colorBuffers[0]);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);

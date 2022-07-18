@@ -1,0 +1,28 @@
+#version 330 core
+
+in vec2 TexCoords;
+out vec4 FragColor;
+
+uniform sampler2D image;
+uniform sampler2D image2;
+vec3 ACESToneMapping(vec3 color)
+{
+	const float A = 2.51f;
+	const float B = 0.03f;
+	const float C = 2.43f;
+	const float D = 0.59f;
+	const float E = 0.14f;
+
+	return (color * (A * color + B)) / (color * (C * color + D) + E);
+}
+void main()
+{    
+   const float gamma = 2.2;
+    vec3 hdrColor = texture( image, TexCoords).rgb;      
+    vec3 bloomColor = texture( image2, TexCoords).rgb;
+    hdrColor += bloomColor;
+    // tone mapping
+    vec3 color = ACESToneMapping(hdrColor);
+    color = pow(color, vec3(1.0/2.2)); 
+    FragColor = vec4(color, 1.0f);
+}
